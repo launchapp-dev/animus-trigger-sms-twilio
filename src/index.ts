@@ -46,7 +46,7 @@ import { TwilioWebhookServer } from './webhook-server.js';
 import type { InboundEvent } from './inbound.js';
 
 const NAME = 'animus-trigger-sms-twilio';
-const VERSION = '0.1.1';
+const VERSION = '0.1.2';
 const DESCRIPTION = 'Twilio SMS/MMS trigger plugin — HTTP webhook inbound + REST API outbound';
 
 const IDENTITY: PluginIdentity = {

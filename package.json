@@ -1,6 +1,6 @@
 {
   "name": "@launchapp-dev/animus-trigger-sms-twilio",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Twilio SMS/MMS trigger plugin for Animus — webhook inbound + REST outbound",
   "license": "Elastic-2.0",
   "type": "module",
