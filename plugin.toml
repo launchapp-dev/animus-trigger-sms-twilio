@@ -1,0 +1,38 @@
+# Static plugin metadata for the Twilio SMS trigger plugin.
+#
+# The runtime source of truth is the `--manifest` output of `dist/index.js`
+# (driven by `definePlugin` in `src/index.ts`). Keep this file in sync.
+
+name        = "animus-trigger-sms-twilio"
+version     = "0.1.0"
+plugin_kind = "trigger_backend"
+description = "Twilio SMS/MMS trigger plugin — HTTP webhook inbound + REST API outbound"
+binary      = "animus-trigger-sms-twilio"
+protocol    = "stdio"
+
+# Required environment variables. The plugin host clears the daemon's
+# environment before spawn and only forwards `PATH`, `HOME`, `TMPDIR`,
+# `LANG`, `LC_ALL`, `RUST_LOG`, `RUST_BACKTRACE`, `TZ`, plus anything
+# declared here.
+env_required = [
+  "TWILIO_ACCOUNT_SID",
+  "TWILIO_AUTH_TOKEN",
+  "TWILIO_FROM_NUMBER",
+]
+
+# Optional env (no preflight enforcement, read at runtime):
+#   TWILIO_WEBHOOK_PORT  — default 8091
+#   TWILIO_WEBHOOK_PATH  — default "/sms"
+#   TWILIO_PUBLIC_URL    — full https URL Twilio posts to (for signature validation)
+
+# Methods this plugin serves.
+methods = [
+  "trigger/watch",
+  "trigger/ack",
+  "sms/send",
+  "sms/send_mms",
+  "health/check",
+]
+
+# Trigger event kinds emitted on the `trigger/event` notification channel.
+event_kinds = ["sms.received", "mms.received"]

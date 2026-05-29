@@ -1,0 +1,35 @@
+{
+  "name": "@launchapp-dev/animus-trigger-sms-twilio",
+  "version": "0.1.0",
+  "description": "Twilio SMS/MMS trigger plugin for Animus — webhook inbound + REST outbound",
+  "license": "Elastic-2.0",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "main": "dist/index.js",
+  "bin": {
+    "animus-trigger-sms-twilio": "dist/index.js"
+  },
+  "scripts": {
+    "postinstall": "bash scripts/build-sdk.sh && bash scripts/build-plugin.sh",
+    "prepare": "bash scripts/build-sdk.sh && bash scripts/build-plugin.sh",
+    "prepack": "npm run build",
+    "build": "tsup",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "start": "node dist/index.js",
+    "manifest": "node dist/index.js --manifest"
+  },
+  "dependencies": {
+    "@launchapp-dev/animus-plugin-sdk": "git+https://github.com/launchapp-dev/animus-plugin-sdk-ts.git#v0.1.0",
+    "twilio": "^5.3.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "tsup": "^8.3.0",
+    "typescript": "^5.6.0",
+    "vitest": "^2.1.0"
+  }
+}
