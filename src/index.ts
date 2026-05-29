@@ -7,6 +7,7 @@
 //                        HTTP server on TWILIO_WEBHOOK_PORT to receive
 //                        Twilio's inbound SMS webhooks and emits a
 //                        `trigger/event` notification per validated message.
+//   - `trigger/schema` — declares SMS/MMS event kinds and ack support.
 //   - `trigger/ack`    — host acks a delivered event (no-op for HTTP webhook
 //                        triggers; we already 200'd Twilio).
 //   - `sms/send`       — outbound SMS via Twilio REST API.
@@ -45,7 +46,7 @@ import { TwilioWebhookServer } from './webhook-server.js';
 import type { InboundEvent } from './inbound.js';
 
 const NAME = 'animus-trigger-sms-twilio';
-const VERSION = '0.1.0';
+const VERSION = '0.1.1';
 const DESCRIPTION = 'Twilio SMS/MMS trigger plugin — HTTP webhook inbound + REST API outbound';
 
 const IDENTITY: PluginIdentity = {
@@ -57,11 +58,19 @@ const IDENTITY: PluginIdentity = {
 
 const METHODS = [
   'trigger/watch',
+  'trigger/schema',
   'trigger/ack',
   'sms/send',
   'sms/send_mms',
   'health/check',
 ];
+
+const TRIGGER_SCHEMA = {
+  kinds: ['sms.received', 'mms.received'],
+  supports_resume: false,
+  supports_dedup: false,
+  supports_ack: true,
+};
 
 // The Animus plugin host scrubs the daemon's env before spawning a plugin and
 // only forwards a short allowlist (PATH, HOME, TMPDIR, ...) plus whatever this
@@ -286,6 +295,8 @@ async function dispatch(frame: RpcRequest, wire: Wire): Promise<RpcResponse | un
         return errorResponse(id, ErrorCode.InternalError, `trigger/watch failed: ${String(err)}`);
       }
     }
+    case 'trigger/schema':
+      return okResponse(id, TRIGGER_SCHEMA);
     case 'trigger/ack': {
       // We already 200'd Twilio in the webhook handler. Twilio uses delivery
       // ack semantics on its end; nothing to do here.

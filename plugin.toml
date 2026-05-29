@@ -1,10 +1,10 @@
 # Static plugin metadata for the Twilio SMS trigger plugin.
 #
-# The runtime source of truth is the `--manifest` output of `dist/index.js`
+# The runtime source of truth is the `--manifest` output of `dist/index.cjs`
 # (driven by `definePlugin` in `src/index.ts`). Keep this file in sync.
 
 name        = "animus-trigger-sms-twilio"
-version     = "0.1.0"
+version     = "0.1.1"
 plugin_kind = "trigger_backend"
 description = "Twilio SMS/MMS trigger plugin — HTTP webhook inbound + REST API outbound"
 binary      = "animus-trigger-sms-twilio"
@@ -28,6 +28,7 @@ env_required = [
 # Methods this plugin serves.
 methods = [
   "trigger/watch",
+  "trigger/schema",
   "trigger/ack",
   "sms/send",
   "sms/send_mms",

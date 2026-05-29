@@ -3,12 +3,12 @@
 #
 # We run this from `postinstall` so that installing this package straight from
 # its git URL (the documented `animus plugin install` path) leaves the
-# `dist/index.js` bin in place. The `prepack` script handles the same job for
-# npm publish. Both are idempotent: if `dist/index.js` already exists we skip.
+# `dist/index.cjs` bin in place. The `prepack` script handles the same job for
+# npm publish. Both are idempotent: if `dist/index.cjs` already exists we skip.
 set -euo pipefail
 
-if [ -f dist/index.js ]; then
-  echo "[build-plugin] dist/index.js already present; skipping" >&2
+if [ -f dist/index.cjs ]; then
+  echo "[build-plugin] dist/index.cjs already present; skipping" >&2
   exit 0
 fi
 
@@ -21,5 +21,5 @@ if [ ! -x node_modules/.bin/tsup ]; then
 fi
 
 node_modules/.bin/tsup
-chmod +x dist/index.js || true
-echo "[build-plugin] built dist/index.js" >&2
+chmod +x dist/index.cjs || true
+echo "[build-plugin] built dist/index.cjs" >&2

@@ -2,11 +2,13 @@ import { defineConfig } from 'tsup';
 
 export default defineConfig({
   entry: ['src/index.ts'],
-  format: ['esm'],
+  format: ['cjs'],
   target: 'node20',
   outDir: 'dist',
   clean: true,
   splitting: false,
+  noExternal: ['@launchapp-dev/animus-plugin-sdk', 'twilio'],
+  outExtension: () => ({ js: '.cjs' }),
   // npm bin scripts on POSIX must start with a shebang or the shell will
   // try to execute the JS as a shell script. Without this Animus's
   // plugin host fails before the manifest probe even runs.

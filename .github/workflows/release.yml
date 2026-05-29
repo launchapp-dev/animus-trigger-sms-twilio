@@ -1,0 +1,79 @@
+name: release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+  id-token: write
+
+env:
+  REPO_NAME: ${{ github.event.repository.name }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        target:
+          - aarch64-apple-darwin
+          - x86_64-apple-darwin
+          - x86_64-unknown-linux-gnu
+          - aarch64-unknown-linux-gnu
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - run: npm ci --no-audit --no-fund
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+      - run: node dist/index.cjs --manifest
+
+      - name: Package platform asset
+        run: |
+          set -euo pipefail
+          mkdir -p "dist/release/${{ matrix.target }}"
+          cp dist/index.cjs "dist/release/${{ matrix.target }}/${REPO_NAME}"
+          chmod 755 "dist/release/${{ matrix.target }}/${REPO_NAME}"
+          ASSET="dist/${REPO_NAME}-${{ matrix.target }}.tar.gz"
+          tar -C "dist/release/${{ matrix.target }}" -czf "$ASSET" "${REPO_NAME}"
+          sha256sum "$ASSET" > "${ASSET}.sha256"
+
+      - uses: sigstore/cosign-installer@v3
+
+      - name: Sign platform asset
+        run: |
+          set -euo pipefail
+          ASSET="dist/${REPO_NAME}-${{ matrix.target }}.tar.gz"
+          cosign sign-blob --yes --bundle "${ASSET}.bundle" "$ASSET"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-${{ matrix.target }}
+          path: |
+            dist/${{ env.REPO_NAME }}-${{ matrix.target }}.tar.gz
+            dist/${{ env.REPO_NAME }}-${{ matrix.target }}.tar.gz.sha256
+            dist/${{ env.REPO_NAME }}-${{ matrix.target }}.tar.gz.bundle
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/*.tar.gz
+            dist/*.tar.gz.sha256
+            dist/*.tar.gz.bundle

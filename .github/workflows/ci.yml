@@ -23,4 +23,4 @@ jobs:
       - name: Build
         run: npm run build
       - name: Manifest probe
-        run: node dist/index.js --manifest
+        run: node dist/index.cjs --manifest
